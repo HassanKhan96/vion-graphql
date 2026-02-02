@@ -1,0 +1,21 @@
+#typeDefs
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  password: String!
+  created_at: String!
+  updated_at: String!
+}
+
+type PublicUser {
+  id: ID!
+  username: String!
+  email: String!
+  created_at: String!
+}
+
+type Query {
+  user(id: ID!): PublicUser
+  me: PublicUser
+}

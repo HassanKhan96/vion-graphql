@@ -1,0 +1,22 @@
+type Conversation {
+  id: ID!
+  conversation_id: String!
+  participant: PublicUser!
+  content: String!
+  created_at: String!
+  sender: String!
+}
+
+type Message {
+  id: ID!
+  conversation_id: String!
+  sender: String!
+  content: String!
+  created_at: String!
+  status: String!
+}
+
+type Query {
+  myConversations: [Conversation!]!
+  getAllConversation(participant_id: ID!): [Message!]!
+}

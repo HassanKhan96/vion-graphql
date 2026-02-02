@@ -1,0 +1,22 @@
+type FriendRequest {
+  id: ID!
+  from: PublicUser!
+  status: Boolean!
+  created_at: String!
+}
+
+input AcceptFriendRequest {
+  requestId: ID!
+  status: String!
+}
+
+type Query {
+  myFriendRequests: [FriendRequest!]!
+  myfriends: [PublicUser!]!
+  unFriend(userId: ID!): String!
+}
+
+type Mutation {
+  sendFriendRequest(toUserId: ID!): String!
+  acceptFriendRequest(input: AcceptFriendRequest!): String!
+}
