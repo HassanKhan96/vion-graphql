@@ -6,46 +6,53 @@ import { tryCatch } from "../helpers/tryCatch.helper";
 export const getMyConversations = async (myId: string) => {
   const db = await getDBClient();
 
-  const query = `SELECT DISTINCT ON (c.conversation_id) c.id, c.conversation_id, c.content, c.created_at,
-   (to_jsonb(u) - 'password') AS participant,
-    CASE 
-        WHEN c.from = $1 THEN 'me'
-        ELSE 'them'
-        END as sender
-    FROM conversation c
-    LEFT JOIN users u ON (u.id = 
-    CASE
-        WHEN c.from = $1 THEN c.to
-        ELSE c.from
-        END
-    )
-    WHERE c.to = $1 OR c.from = $1
-    ORDER BY c.conversation_id, c.created_at DESC`;
+  const query = `
+    SELECT 
+     cp.id,
+     cp.conversation_id,
+     cp.user_id,
+     cp.role,
+     cp.joined_at as created_at,
+     cp.last_read_message_id,
+     cp.mute_until,
+     cp2.user_id AS other_user_id,
+     u.username AS username,
+     m.id AS last_message_id, 
+     m.content AS last_message, 
+     m.created_at AS last_message_at
+    FROM conversation_participants cp
+    JOIN conversation_participants cp2 ON cp2.conversation_id = cp.conversation_id AND cp2.user_id != $1
+    JOIN users u ON u.id = cp2.user_id
+    LEFT JOIN messages m ON m.id = 
+    ( SELECT id FROM messages WHERE conversation_id = cp.conversation_id ORDER BY created_at DESC LIMIT 1 )
+    WHERE cp.user_id = $1
+`;
 
   const params = [myId];
 
   const promise = db.query(query, params);
   const [result, error] = await tryCatch(promise);
-  if (error) throwDBError("Failed to fetch conversations");
+  if (error) {
+    console.log(error);
+    throwDBError("Failed to fetch conversations");
+  }
 
   return result.rows;
 };
 
 export const getAllMessages = async (
-  participant_id: string,
+  conversation_id: string,
   user_id: string,
 ) => {
   const db = await getDBClient();
 
-  const conversation_id = getConversationId(user_id, participant_id);
-
-  const query = `SELECT c.id, c.conversation_id, c.content, c.status, c.created_at,
+  const query = `SELECT m.id, m.conversation_id, m.content, m.status, m.created_at,
     CASE
-      WHEN c.from = $2 THEN 'me'
+      WHEN m.sender_id = $2 THEN 'me'
       ELSE 'them'
     END as sender
-    FROM conversation c
-  WHERE c.conversation_id = $1
+    FROM messages m
+  WHERE m.conversation_id = $1
   
   `;
 
@@ -54,7 +61,10 @@ export const getAllMessages = async (
   const promise = db.query(query, params);
   const [result, error] = await tryCatch(promise);
 
-  if (error) throwDBError("Unable to get messages");
+  if (error) {
+    console.log(error);
+    throwDBError("Unable to get messages");
+  }
 
   return result.rows;
 };

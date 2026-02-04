@@ -18,7 +18,7 @@ const queries = {
     return conversations;
   },
 
-  getAllConversation: async (_, { participant_id }, context) => {
+  getAllConversation: async (_, { conversation_id }, context) => {
     let user = context.user;
     if (user === null) {
       console.log(user);
@@ -29,7 +29,7 @@ const queries = {
       });
     }
 
-    const allMessages = await getAllMessages(participant_id, user.id);
+    const allMessages = await getAllMessages(conversation_id, user.id);
 
     return allMessages;
   },

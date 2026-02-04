@@ -18,7 +18,7 @@ export const generateAuthToken = (
 };
 
 export const generateAccessToken = (payload: JwtPayload) => {
-  return generateAuthToken(payload, "1h", process.env.JWT_SECRET as string);
+  return generateAuthToken(payload, "24h", process.env.JWT_SECRET as string);
 };
 
 export const generateRefreshToken = (payload: JwtPayload) => {

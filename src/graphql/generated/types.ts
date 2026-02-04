@@ -24,12 +24,15 @@ export type AcceptFriendRequest = {
 
 export type Conversation = {
   __typename?: 'Conversation';
-  content: Scalars['String']['output'];
-  conversation_id: Scalars['String']['output'];
+  conversation_id: Scalars['ID']['output'];
   created_at: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  participant: PublicUser;
-  sender: Scalars['String']['output'];
+  last_message?: Maybe<Scalars['String']['output']>;
+  last_message_at?: Maybe<Scalars['String']['output']>;
+  last_message_id?: Maybe<Scalars['String']['output']>;
+  last_read_message_id?: Maybe<Scalars['String']['output']>;
+  other_user_id: Scalars['ID']['output'];
+  type?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
 };
 
 export type FriendRequest = {
@@ -43,7 +46,7 @@ export type FriendRequest = {
 export type Message = {
   __typename?: 'Message';
   content: Scalars['String']['output'];
-  conversation_id: Scalars['String']['output'];
+  conversation_id: Scalars['ID']['output'];
   created_at: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   sender: Scalars['String']['output'];
@@ -87,7 +90,7 @@ export type Query = {
 
 
 export type QueryGetAllConversationArgs = {
-  participant_id: Scalars['ID']['input'];
+  conversation_id: Scalars['ID']['input'];
 };
 
 
@@ -213,12 +216,15 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type ConversationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = ResolversObject<{
-  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  conversation_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  conversation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  participant?: Resolver<ResolversTypes['PublicUser'], ParentType, ContextType>;
-  sender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  last_message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  last_message_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  last_message_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  last_read_message_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  other_user_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type FriendRequestResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['FriendRequest'] = ResolversParentTypes['FriendRequest']> = ResolversObject<{
@@ -230,7 +236,7 @@ export type FriendRequestResolvers<ContextType = MyContext, ParentType extends R
 
 export type MessageResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = ResolversObject<{
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  conversation_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  conversation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -250,7 +256,7 @@ export type PublicUserResolvers<ContextType = MyContext, ParentType extends Reso
 }>;
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  getAllConversation?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryGetAllConversationArgs, 'participant_id'>>;
+  getAllConversation?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryGetAllConversationArgs, 'conversation_id'>>;
   me?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   myConversations?: Resolver<Array<ResolversTypes['Conversation']>, ParentType, ContextType>;
   myFriendRequests?: Resolver<Array<ResolversTypes['FriendRequest']>, ParentType, ContextType>;

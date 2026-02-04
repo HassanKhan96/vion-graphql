@@ -1,15 +1,18 @@
 type Conversation {
-  id: ID!
-  conversation_id: String!
-  participant: PublicUser!
-  content: String!
+  conversation_id: ID!
+  type: String
   created_at: String!
-  sender: String!
+  last_read_message_id: String
+  last_message_id: String
+  last_message: String
+  last_message_at: String
+  other_user_id: ID!
+  username: String!
 }
 
 type Message {
   id: ID!
-  conversation_id: String!
+  conversation_id: ID!
   sender: String!
   content: String!
   created_at: String!
@@ -18,5 +21,5 @@ type Message {
 
 type Query {
   myConversations: [Conversation!]!
-  getAllConversation(participant_id: ID!): [Message!]!
+  getAllConversation(conversation_id: ID!): [Message!]!
 }
