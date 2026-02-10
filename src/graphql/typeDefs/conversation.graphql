@@ -13,6 +13,7 @@ type Conversation {
 type Message {
   id: ID!
   conversation_id: ID!
+  sender_id: ID!
   sender: String!
   content: String!
   created_at: String!

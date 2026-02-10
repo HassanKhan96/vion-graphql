@@ -50,6 +50,7 @@ export type Message = {
   created_at: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   sender: Scalars['String']['output'];
+  sender_id: Scalars['ID']['output'];
   status: Scalars['String']['output'];
 };
 
@@ -240,6 +241,7 @@ export type MessageResolvers<ContextType = MyContext, ParentType extends Resolve
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sender_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 

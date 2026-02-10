@@ -46,14 +46,21 @@ export const getAllMessages = async (
 ) => {
   const db = await getDBClient();
 
-  const query = `SELECT m.id, m.conversation_id, m.content, m.status, m.created_at,
-    CASE
-      WHEN m.sender_id = $2 THEN 'me'
-      ELSE 'them'
-    END as sender
-    FROM messages m
+  const query = `
+  SELECT 
+   m.id, 
+   m.conversation_id,
+   m.sender_id, 
+   m.content, 
+   m.status, 
+   m.created_at,
+  CASE
+    WHEN m.sender_id = $2 THEN 'me'
+    ELSE 'them'
+  END AS sender
+  FROM messages m
   WHERE m.conversation_id = $1
-  
+  ORDER BY m.created_at
   `;
 
   const params = [conversation_id, user_id];
