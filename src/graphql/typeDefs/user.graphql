@@ -17,5 +17,6 @@ type PublicUser {
 
 type Query {
   user(id: ID!): PublicUser
+  userByEmail(email: String!): PublicUser
   me: PublicUser
 }

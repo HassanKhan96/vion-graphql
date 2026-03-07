@@ -87,6 +87,7 @@ export type Query = {
   myfriends: Array<PublicUser>;
   unFriend: Scalars['String']['output'];
   user?: Maybe<PublicUser>;
+  userByEmail?: Maybe<PublicUser>;
 };
 
 
@@ -102,6 +103,11 @@ export type QueryUnFriendArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryUserByEmailArgs = {
+  email: Scalars['String']['input'];
 };
 
 export type User = {
@@ -265,6 +271,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   myfriends?: Resolver<Array<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   unFriend?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryUnFriendArgs, 'userId'>>;
   user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  userByEmail?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>;
 }>;
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
