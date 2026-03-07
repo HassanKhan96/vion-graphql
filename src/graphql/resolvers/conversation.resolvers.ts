@@ -1,5 +1,6 @@
 import { GraphQLError } from "graphql";
 import {
+  deleteConversationForUser,
   getAllMessages,
   getMyConversations,
 } from "../../repositories/conversation.repositories";
@@ -54,7 +55,29 @@ const queries = {
   },
 };
 
-const mutations = {};
+const mutations = {
+  deleteMyConversation: async (_, { conversation_id }, context) => {
+    const user = context.user;
+    if (user === null) {
+      throw new GraphQLError("Unauthorized", {
+        extensions: {
+          code: "UNAUTHORIZED",
+        },
+      });
+    }
+
+    const deleted = await deleteConversationForUser(conversation_id, user.id);
+    if (!deleted) {
+      throw new GraphQLError("Conversation not found", {
+        extensions: {
+          code: "NOT_FOUND",
+        },
+      });
+    }
+
+    return "Conversation deleted";
+  },
+};
 
 export const conversationResolvers = {
   Query: queries,

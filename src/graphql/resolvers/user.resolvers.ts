@@ -41,7 +41,12 @@ const queries = {
       });
     }
 
-    const { password, updated_at, ...user } = await getUserByEmail(email);
+    const row = await getUserByEmail(email);
+    if (!row) {
+      return null;
+    }
+
+    const { password, updated_at, ...user } = row;
     return user;
   },
 

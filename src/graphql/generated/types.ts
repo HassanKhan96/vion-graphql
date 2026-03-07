@@ -64,6 +64,7 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: Scalars['String']['output'];
+  deleteMyConversation: Scalars['String']['output'];
   sendFriendRequest: Scalars['String']['output'];
   uploadMyAvatar: PublicUser;
 };
@@ -71,6 +72,11 @@ export type Mutation = {
 
 export type MutationAcceptFriendRequestArgs = {
   input: AcceptFriendRequest;
+};
+
+
+export type MutationDeleteMyConversationArgs = {
+  conversation_id: Scalars['ID']['input'];
 };
 
 
@@ -275,6 +281,7 @@ export type MessageResolvers<ContextType = MyContext, ParentType extends Resolve
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   acceptFriendRequest?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'input'>>;
+  deleteMyConversation?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteMyConversationArgs, 'conversation_id'>>;
   sendFriendRequest?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'toUserId'>>;
   uploadMyAvatar?: Resolver<ResolversTypes['PublicUser'], ParentType, ContextType, RequireFields<MutationUploadMyAvatarArgs, 'input'>>;
 }>;

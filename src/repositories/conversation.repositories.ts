@@ -1,5 +1,4 @@
 import { getDBClient } from "../configs/db";
-import { getConversationId } from "../helpers/conversation";
 import { throwDBError } from "../helpers/error.helper";
 import { tryCatch } from "../helpers/tryCatch.helper";
 
@@ -80,4 +79,83 @@ export const getAllMessages = async (
   }
 
   return result.rows.reverse();
+};
+
+export const deleteConversationForUser = async (
+  conversation_id: string,
+  user_id: string,
+) => {
+  const db = await getDBClient();
+
+  const [beginResult, beginError] = await tryCatch(db.query("BEGIN"));
+  if (beginError) {
+    throwDBError("Unable to delete conversation");
+  }
+
+  const [deleteParticipantResult, deleteParticipantError] = await tryCatch(
+    db.query(
+      `
+      DELETE FROM conversation_participants
+      WHERE conversation_id = $1 AND user_id = $2
+      RETURNING conversation_id
+      `,
+      [conversation_id, user_id],
+    ),
+  );
+
+  if (deleteParticipantError) {
+    await db.query("ROLLBACK").catch(() => null);
+    throwDBError("Unable to delete conversation");
+  }
+
+  if (!deleteParticipantResult.rowCount) {
+    await db.query("ROLLBACK").catch(() => null);
+    return false;
+  }
+
+  const [participantsResult, participantsError] = await tryCatch(
+    db.query(
+      `
+      SELECT COUNT(*)::int AS count
+      FROM conversation_participants
+      WHERE conversation_id = $1
+      `,
+      [conversation_id],
+    ),
+  );
+
+  if (participantsError) {
+    await db.query("ROLLBACK").catch(() => null);
+    throwDBError("Unable to delete conversation");
+  }
+
+  const remainingParticipants = participantsResult.rows[0]?.count ?? 0;
+
+  if (remainingParticipants === 0) {
+    const [deleteMessagesResult, deleteMessagesError] = await tryCatch(
+      db.query("DELETE FROM messages WHERE conversation_id = $1", [
+        conversation_id,
+      ]),
+    );
+    if (deleteMessagesError) {
+      await db.query("ROLLBACK").catch(() => null);
+      throwDBError("Unable to delete conversation");
+    }
+
+    const [deleteConversationResult, deleteConversationError] = await tryCatch(
+      db.query("DELETE FROM conversations WHERE id = $1", [conversation_id]),
+    );
+    if (deleteConversationError) {
+      await db.query("ROLLBACK").catch(() => null);
+      throwDBError("Unable to delete conversation");
+    }
+  }
+
+  const [commitResult, commitError] = await tryCatch(db.query("COMMIT"));
+  if (commitError) {
+    await db.query("ROLLBACK").catch(() => null);
+    throwDBError("Unable to delete conversation");
+  }
+
+  return true;
 };

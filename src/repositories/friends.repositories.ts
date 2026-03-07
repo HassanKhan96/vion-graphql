@@ -118,7 +118,7 @@ export const getMyFriends = async (userId: string) => {
   const db = await getDBClient();
 
   const query = `
-  SELECT u.id, u.username, u.email, u.created_at, u.updated_at FROM friends f
+  SELECT u.id, u.username, u.email, u.avatar_url, u.created_at, u.updated_at FROM friends f
   JOIN users u ON (u.id = 
   CASE
     WHEN f.user_id1 = $1 THEN f.user_id2
