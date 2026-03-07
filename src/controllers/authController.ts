@@ -32,6 +32,8 @@ export const login = async (req: Request, res: Response) => {
 
   const refreshToken = generateRefreshToken(payload);
 
+  const { password: pass, updated_at, created_at, ...publicUser } = user;
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -39,7 +41,7 @@ export const login = async (req: Request, res: Response) => {
     maxAge: COOKIE_AGE,
   });
 
-  return res.status(200).json({ accessToken, user });
+  return res.status(200).json({ accessToken, user: publicUser });
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -62,13 +64,15 @@ export const register = async (req: Request, res: Response) => {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
+  const { password: pass, updated_at, created_at, ...publicUser } = user;
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: COOKIE_AGE,
   });
-  return res.status(200).json({ accessToken, user });
+  return res.status(200).json({ accessToken, user: publicUser });
 };
 
 export const getNewAccessToken = async (req: Request, res: Response) => {
