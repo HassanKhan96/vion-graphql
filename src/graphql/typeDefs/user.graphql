@@ -4,6 +4,7 @@ type User {
   username: String!
   email: String!
   password: String!
+  avatar_url: String
   created_at: String!
   updated_at: String!
 }
@@ -12,11 +13,22 @@ type PublicUser {
   id: ID!
   username: String!
   email: String!
+  avatar_url: String
   created_at: String!
+}
+
+input AvatarUploadInput {
+  base64: String!
+  filename: String!
+  mimeType: String!
 }
 
 type Query {
   user(id: ID!): PublicUser
   userByEmail(email: String!): PublicUser
   me: PublicUser
+}
+
+type Mutation {
+  uploadMyAvatar(input: AvatarUploadInput!): PublicUser!
 }

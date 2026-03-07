@@ -8,6 +8,7 @@ type Conversation {
   last_message_at: String
   other_user_id: ID!
   username: String!
+  avatar_url: String
 }
 
 type Message {
@@ -22,5 +23,9 @@ type Message {
 
 type Query {
   myConversations: [Conversation!]!
-  getAllConversation(conversation_id: ID!): [Message!]!
+  getAllConversation(
+    conversation_id: ID!
+    limit: Int = 15
+    before: String
+  ): [Message!]!
 }

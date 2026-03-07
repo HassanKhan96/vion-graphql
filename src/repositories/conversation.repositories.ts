@@ -17,6 +17,7 @@ export const getMyConversations = async (myId: string) => {
      cp.mute_until,
      cp2.user_id AS other_user_id,
      u.username AS username,
+     u.avatar_url AS avatar_url,
      m.id AS last_message_id, 
      m.content AS last_message, 
      m.created_at AS last_message_at
@@ -43,8 +44,11 @@ export const getMyConversations = async (myId: string) => {
 export const getAllMessages = async (
   conversation_id: string,
   user_id: string,
+  limit: number,
+  before: string | null,
 ) => {
   const db = await getDBClient();
+  const safeLimit = Math.min(Math.max(limit || 15, 1), 50);
 
   const query = `
   SELECT 
@@ -52,18 +56,20 @@ export const getAllMessages = async (
    m.conversation_id,
    m.sender_id, 
    m.content, 
-   m.status, 
-   m.created_at,
+  m.status, 
+  m.created_at,
   CASE
-    WHEN m.sender_id = $2 THEN 'me'
+    WHEN m.sender_id = $4 THEN 'me'
     ELSE 'them'
   END AS sender
   FROM messages m
   WHERE m.conversation_id = $1
-  ORDER BY m.created_at
+    AND ($3::timestamptz IS NULL OR m.created_at < $3::timestamptz)
+  ORDER BY m.created_at DESC
+  LIMIT $2
   `;
 
-  const params = [conversation_id, user_id];
+  const params = [conversation_id, safeLimit, before, user_id];
 
   const promise = db.query(query, params);
   const [result, error] = await tryCatch(promise);
@@ -73,5 +79,5 @@ export const getAllMessages = async (
     throwDBError("Unable to get messages");
   }
 
-  return result.rows;
+  return result.rows.reverse();
 };

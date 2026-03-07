@@ -22,8 +22,15 @@ export type AcceptFriendRequest = {
   status: Scalars['String']['input'];
 };
 
+export type AvatarUploadInput = {
+  base64: Scalars['String']['input'];
+  filename: Scalars['String']['input'];
+  mimeType: Scalars['String']['input'];
+};
+
 export type Conversation = {
   __typename?: 'Conversation';
+  avatar_url?: Maybe<Scalars['String']['output']>;
   conversation_id: Scalars['ID']['output'];
   created_at: Scalars['String']['output'];
   last_message?: Maybe<Scalars['String']['output']>;
@@ -58,6 +65,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: Scalars['String']['output'];
   sendFriendRequest: Scalars['String']['output'];
+  uploadMyAvatar: PublicUser;
 };
 
 
@@ -70,8 +78,14 @@ export type MutationSendFriendRequestArgs = {
   toUserId: Scalars['ID']['input'];
 };
 
+
+export type MutationUploadMyAvatarArgs = {
+  input: AvatarUploadInput;
+};
+
 export type PublicUser = {
   __typename?: 'PublicUser';
+  avatar_url?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['String']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -92,7 +106,9 @@ export type Query = {
 
 
 export type QueryGetAllConversationArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
   conversation_id: Scalars['ID']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -112,6 +128,7 @@ export type QueryUserByEmailArgs = {
 
 export type User = {
   __typename?: 'User';
+  avatar_url?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['String']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -195,10 +212,12 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   AcceptFriendRequest: AcceptFriendRequest;
+  AvatarUploadInput: AvatarUploadInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Conversation: ResolverTypeWrapper<Conversation>;
   FriendRequest: ResolverTypeWrapper<FriendRequest>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   PublicUser: ResolverTypeWrapper<PublicUser>;
@@ -210,10 +229,12 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   AcceptFriendRequest: AcceptFriendRequest;
+  AvatarUploadInput: AvatarUploadInput;
   Boolean: Scalars['Boolean']['output'];
   Conversation: Conversation;
   FriendRequest: FriendRequest;
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Message: Message;
   Mutation: Record<PropertyKey, never>;
   PublicUser: PublicUser;
@@ -223,6 +244,7 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type ConversationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = ResolversObject<{
+  avatar_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   conversation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   last_message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -254,9 +276,11 @@ export type MessageResolvers<ContextType = MyContext, ParentType extends Resolve
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   acceptFriendRequest?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'input'>>;
   sendFriendRequest?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'toUserId'>>;
+  uploadMyAvatar?: Resolver<ResolversTypes['PublicUser'], ParentType, ContextType, RequireFields<MutationUploadMyAvatarArgs, 'input'>>;
 }>;
 
 export type PublicUserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PublicUser'] = ResolversParentTypes['PublicUser']> = ResolversObject<{
+  avatar_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -264,7 +288,7 @@ export type PublicUserResolvers<ContextType = MyContext, ParentType extends Reso
 }>;
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  getAllConversation?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryGetAllConversationArgs, 'conversation_id'>>;
+  getAllConversation?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryGetAllConversationArgs, 'conversation_id' | 'limit'>>;
   me?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   myConversations?: Resolver<Array<ResolversTypes['Conversation']>, ParentType, ContextType>;
   myFriendRequests?: Resolver<Array<ResolversTypes['FriendRequest']>, ParentType, ContextType>;
@@ -275,6 +299,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
 }>;
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+  avatar_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

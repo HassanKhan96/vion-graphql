@@ -7,7 +7,7 @@ export const addFriendRequest = async (userId1: string, userId2: string) => {
 
   // Check if a friend request already exists between the two users
   const requestExistsQuery =
-    "SELECT * FROM friends WHERE user_id1 = $1 AND user_id2 = $2";
+    "SELECT id FROM friends WHERE (user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1) LIMIT 1";
 
   const requestExistsValues = [userId1, userId2];
 
@@ -15,8 +15,13 @@ export const addFriendRequest = async (userId1: string, userId2: string) => {
     db.query(requestExistsQuery, requestExistsValues),
   );
 
-  if (existingRequestError)
+  if (existingRequestError) {
+    throwDBError("Unable to validate friend request");
+  }
+
+  if (existingRequestResult.rowCount > 0) {
     throwGraphQLError("Request already sent", "BAD_REQUEST");
+  }
 
   // send friend request
   const query =

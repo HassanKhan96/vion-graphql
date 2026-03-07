@@ -55,3 +55,25 @@ export const createUser = async (input: {
 
   return result.rows[0];
 };
+
+export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
+  const db = await getDBClient();
+
+  const query = `
+    UPDATE users
+    SET avatar_url = $1, updated_at = NOW()
+    WHERE id = $2
+    RETURNING id, username, email, avatar_url, created_at;
+  `;
+
+  const values = [avatarUrl, userId];
+  const promise = db.query(query, values);
+
+  const [result, error] = await tryCatch(promise);
+
+  if (error) {
+    throwDBError("Failed to update avatar");
+  }
+
+  return result.rows[0];
+};

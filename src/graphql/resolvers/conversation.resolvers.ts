@@ -4,6 +4,20 @@ import {
   getMyConversations,
 } from "../../repositories/conversation.repositories";
 
+const normalizeBeforeCursor = (before?: string | null) => {
+  if (!before) return null;
+
+  if (/^\d+$/.test(before)) {
+    const millis = Number(before);
+    if (!Number.isFinite(millis)) return null;
+    return new Date(millis).toISOString();
+  }
+
+  const parsed = Date.parse(before);
+  if (Number.isNaN(parsed)) return null;
+  return new Date(parsed).toISOString();
+};
+
 const queries = {
   myConversations: async (_, __, context) => {
     if (context.user === null) {
@@ -18,7 +32,7 @@ const queries = {
     return conversations;
   },
 
-  getAllConversation: async (_, { conversation_id }, context) => {
+  getAllConversation: async (_, { conversation_id, limit, before }, context) => {
     let user = context.user;
     if (user === null) {
       console.log(user);
@@ -29,7 +43,12 @@ const queries = {
       });
     }
 
-    const allMessages = await getAllMessages(conversation_id, user.id);
+    const allMessages = await getAllMessages(
+      conversation_id,
+      user.id,
+      limit ?? 15,
+      normalizeBeforeCursor(before),
+    );
 
     return allMessages;
   },
