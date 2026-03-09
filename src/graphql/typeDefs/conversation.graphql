@@ -2,8 +2,11 @@ type Conversation {
   conversation_id: ID!
   type: String
   created_at: String!
+  unread_count: Int!
   last_read_message_id: String
   last_message_id: String
+  last_message_sender_id: String
+  last_message_status: String
   last_message: String
   last_message_at: String
   other_user_id: ID!

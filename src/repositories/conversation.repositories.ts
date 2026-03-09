@@ -12,12 +12,21 @@ export const getMyConversations = async (myId: string) => {
      cp.user_id,
      cp.role,
      cp.joined_at as created_at,
+     (
+      SELECT COUNT(*)::int
+      FROM messages unread_messages
+      WHERE unread_messages.conversation_id = cp.conversation_id
+        AND unread_messages.sender_id != $1
+        AND unread_messages.status != 'read'
+     ) AS unread_count,
      cp.last_read_message_id,
      cp.mute_until,
      cp2.user_id AS other_user_id,
      u.username AS username,
      u.avatar_url AS avatar_url,
      m.id AS last_message_id, 
+     m.sender_id AS last_message_sender_id,
+     m.status AS last_message_status,
      m.content AS last_message, 
      m.created_at AS last_message_at
     FROM conversation_participants cp
